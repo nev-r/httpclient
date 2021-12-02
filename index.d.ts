@@ -1,6 +1,6 @@
 import { PlatformErrorCodes, ServerResponse } from "bungie-api-ts/common";
 import { HttpClient } from "bungie-api-ts/http";
-export declare function createHttpClient(apiKey: string, withCredentials: boolean, options?: {
+export declare function createHttpClient(apiKey: string, options?: {
     /**
      * always ON, unless explicitly set to false. this backs off increasingly,
      * delaying new api requests as previous ones encounter downtime or throttling responses.
@@ -25,12 +25,12 @@ export declare function createHttpClient(apiKey: string, withCredentials: boolea
         timeout: number;
         onTimeout: (startTime: number, timeout: number) => void;
     };
-}, 
-/**
- * an override mostly used for OAuth. don't worry about this:
- * to use this, you should have fetch attached to the window or global objects
- */
-fetchFunctionOverride?: typeof fetch): HttpClient;
+    /**
+     * an override used to inject a fetch-like function with OAuth already set up.
+     * regardless, you should really have fetch attached to the window or global object
+     */
+    fetchFunctionOverride?: typeof fetch;
+}): HttpClient;
 /**
  * an error indicating a non-200 response code
  */

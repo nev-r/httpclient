@@ -2,13 +2,8 @@
 // HTTPCLIENT UTILS
 //
 let timesThrottled = 0;
-export function createHttpClient(apiKey, withCredentials, options = {}, 
-/**
- * an override mostly used for OAuth. don't worry about this:
- * to use this, you should have fetch attached to the window or global objects
- */
-fetchFunctionOverride = fetch) {
-    let fetchFunction = fetchFunctionOverride;
+export function createHttpClient(apiKey, options = {}) {
+    let fetchFunction = options.fetchFunctionOverride ?? fetch;
     globalThis;
     if (options.withWarningTimeout) {
         const { onTimeout, timeout } = options.withWarningTimeout;
@@ -77,7 +72,7 @@ fetchFunctionOverride = fetch) {
                 : {
                     "X-API-Key": apiKey,
                 },
-            credentials: withCredentials ? "include" : "omit",
+            credentials: "include",
         });
         const response = await fetchFunction(fetchOptions);
         const data = await response.json();
