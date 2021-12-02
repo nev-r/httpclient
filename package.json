@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "start": "tsc"
+  },
+  "main": "./index.js",
+  "peerDependencies": {
+    "bungie-api-ts": "^4.13.0",
+    "typescript": "^4.5.2"
+  }
+}
