@@ -61,21 +61,31 @@ export function createHttpClient(apiKey, options = {}) {
             }
             url = `${url}?${new URLSearchParams(config.params).toString()}`;
         }
+        const headers = { "X-API-Key": apiKey };
+        if (config.body)
+            headers["Content-Type"] = "application/json";
+        const body = config.body ? JSON.stringify(config.body) : undefined;
         const fetchOptions = new Request(url, {
             method: config.method,
-            body: config.body ? JSON.stringify(config.body) : undefined,
-            headers: config.body
-                ? {
-                    "X-API-Key": apiKey,
-                    "Content-Type": "application/json",
-                }
-                : {
-                    "X-API-Key": apiKey,
-                },
+            body,
+            headers,
             credentials: "include",
         });
         const response = await fetchFunction(fetchOptions);
-        const data = await response.json();
+        const text = await response.text();
+        let data;
+        try {
+            data = JSON.parse(text);
+        }
+        catch {
+            const info1 = text.match(/<title>([^<]+)/)?.[1];
+            const info2 = text
+                .match(/<body[^>]*>(.{0,120})/is)?.[1]
+                .replace(/<[^>]+(>|$)/g, "")
+                .trim()
+                .replace(/\s{2,}/g, " ");
+            throw new Error(`parsing error: the response was not JSON?\n${info1}\n${info2}`);
+        }
         // try throwing bungie errors, which have more information, first
         maybeThrowBungieError(data, fetchOptions);
         // then throw errors on generic http error codes
